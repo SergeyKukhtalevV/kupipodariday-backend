@@ -1,7 +1,8 @@
-import { Entity, Column, ManyToOne } from 'typeorm';
+import { Entity, Column, ManyToOne, ManyToMany } from 'typeorm';
 import { IsUrl, MaxLength, MinLength } from 'class-validator';
 import { GeneralEntity } from '../../utils/GeneralEntity';
 import { User } from '../../users/entity/user.entity';
+import { Offer } from '../../offers/entity/offer.entity';
 
 @Entity()
 export class Wish extends GeneralEntity {
@@ -15,7 +16,7 @@ export class Wish extends GeneralEntity {
 
   @Column()
   @IsUrl()
-  avatar: string;
+  image: string;
 
   @Column({ type: 'float' })
   price: number;
@@ -30,6 +31,9 @@ export class Wish extends GeneralEntity {
   @MinLength(1)
   @MaxLength(1024)
   description: string;
+
+  @ManyToMany(() => Offer, (offer) => offer.item)
+  offers: Offer[];
 
   @Column()
   copied: number;
