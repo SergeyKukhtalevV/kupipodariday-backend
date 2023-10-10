@@ -1,6 +1,7 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { GeneralEntity } from '../../utils/GeneralEntity';
 import { IsEmail, IsUrl, MaxLength, MinLength } from 'class-validator';
+import { Wish } from '../../wishes/entities/wish.entity';
 
 @Entity()
 export class User extends GeneralEntity {
@@ -24,4 +25,7 @@ export class User extends GeneralEntity {
 
   @Column()
   password: string;
+
+  @OneToMany(() => Wish, (wish) => wish.owner)
+  wishes: Wish[];
 }
