@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToMany, ManyToOne } from 'typeorm';
 import { GeneralEntity } from '../../utils/GeneralEntity';
 import {
   IsInt,
@@ -9,6 +9,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { User } from '../../users/entities/user.entity';
+import { Offer } from '../../offers/entities/offer.entity';
 
 @Entity()
 export class Wish extends GeneralEntity {
@@ -46,4 +47,7 @@ export class Wish extends GeneralEntity {
   @Column({ type: 'integer', default: 0 })
   @IsInt()
   copied: number;
+
+  @ManyToMany(() => Offer, (offer) => offer.item)
+  offers: Offer[];
 }

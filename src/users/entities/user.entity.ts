@@ -3,6 +3,7 @@ import { GeneralEntity } from '../../utils/GeneralEntity';
 import { IsEmail, IsUrl, MaxLength, MinLength } from 'class-validator';
 import { Wish } from '../../wishes/entities/wish.entity';
 import { Wishlist } from '../../wishlists/entities/wishlist.entity';
+import { Offer } from '../../offers/entities/offer.entity';
 
 @Entity()
 export class User extends GeneralEntity {
@@ -32,4 +33,7 @@ export class User extends GeneralEntity {
 
   @OneToMany(() => Wishlist, (wishlist) => wishlist.owner)
   wishlists: Wishlist[];
+
+  @OneToMany(() => Offer, (offer) => offer.user)
+  offers: Offer[];
 }
