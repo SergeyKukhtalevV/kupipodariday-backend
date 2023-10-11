@@ -9,8 +9,8 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto {
-  @MinLength(2)
-  @MaxLength(30)
+  @MinLength(1)
+  @MaxLength(64)
   @IsString()
   username: string;
 
@@ -29,6 +29,6 @@ export class CreateUserDto {
   email: string;
 
   @IsString()
-  @IsNotEmpty()
+  @MinLength(2)
   password: string;
 }
