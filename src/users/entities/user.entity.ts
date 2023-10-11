@@ -2,6 +2,7 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { GeneralEntity } from '../../utils/GeneralEntity';
 import { IsEmail, IsUrl, MaxLength, MinLength } from 'class-validator';
 import { Wish } from '../../wishes/entities/wish.entity';
+import { Wishlist } from '../../wishlists/entities/wishlist.entity';
 
 @Entity()
 export class User extends GeneralEntity {
@@ -28,4 +29,7 @@ export class User extends GeneralEntity {
 
   @OneToMany(() => Wish, (wish) => wish.owner)
   wishes: Wish[];
+
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.owner)
+  wishlists: Wishlist[];
 }
