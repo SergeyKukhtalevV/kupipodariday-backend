@@ -11,5 +11,6 @@ import { Offer } from '../offers/entities/offer.entity';
   imports: [TypeOrmModule.forFeature([User, Wish, Wishlist, Offer])],
   controllers: [UsersController],
   providers: [UsersService],
+  exports: [UsersService],
 })
 export class UsersModule {}
