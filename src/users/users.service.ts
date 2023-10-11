@@ -9,29 +9,31 @@ import { Repository } from 'typeorm';
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private usersRepository: Repository<User>,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const user = await this.userRepository.create(createUserDto);
+    const user = await this.usersRepository.create(createUserDto);
 
-    return this.userRepository.save(user);
+    return this.usersRepository.save(user);
   }
 
   async findAll() {
-    return this.userRepository.find();
+    return this.usersRepository.find();
   }
 
-  async findOne(id: number) {
-    const user = await this.userRepository.findOne({ where: { ['id']: id } });
+  async findOneByIdOrUsername(key: 'id' | 'username', value: number | string) {
+    const user = await this.usersRepository.findOne({
+      where: { [key]: value },
+    });
     if (!user) {
-      throw new NotFoundException(`Not found user with ${id}`);
+      throw new NotFoundException(`Not found user with ${value}`);
     }
     return user;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const updateResult = await this.userRepository.update(
+    const updateResult = await this.usersRepository.update(
       `${id}`,
       updateUserDto,
     );
