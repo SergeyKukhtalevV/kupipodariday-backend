@@ -3,8 +3,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { hash } from 'bcrypt';
+import { FindUserDto } from './dto/find-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -19,15 +20,10 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto) {
-    const user = await this.usersRepository.create(createUserDto);
+    const user = this.usersRepository.create(createUserDto);
 
     return this.usersRepository.save(user);
   }
-
-  async findAll() {
-    return this.usersRepository.find();
-  }
-
   async findOneByIdOrUsername(key: 'id' | 'username', value: number | string) {
     const user = await this.usersRepository.findOne({
       where: { [key]: value },
@@ -58,5 +54,19 @@ export class UsersService {
     } else {
       return this.findOneByIdOrUsername('id', user.id);
     }
+  }
+
+  async findMany(findUserDto: FindUserDto) {
+    const user = await this.usersRepository.findOne({
+      where: [
+        { email: Like(`${findUserDto.query}`) },
+        { username: Like(`${findUserDto.query}`) },
+      ],
+    });
+    if (!user) {
+      throw new NotFoundException(`Not found user with ${findUserDto.query}`);
+    }
+    const { password, ...result } = user;
+    return result;
   }
 }
