@@ -38,13 +38,19 @@ export class UsersService {
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(user: User, updateUserDto: UpdateUserDto) {
+    if (updateUserDto.password) {
+      const newHashPassword = await hash(updateUserDto.password, 10);
+      updateUserDto = { ...updateUserDto, password: newHashPassword };
+    }
     const updateResult = await this.usersRepository.update(
-      `${id}`,
+      user.id,
       updateUserDto,
     );
     if (updateResult.affected === 0) {
-      throw new NotFoundException(`Not can update user with ${id}`);
+      throw new NotFoundException(`Not can update user with ${user.id}`);
+    } else {
+      return this.findOneByIdOrUsername('id', user.id);
     }
   }
 }
