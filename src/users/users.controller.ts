@@ -8,19 +8,9 @@ import { User } from './entities/user.entity';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-  @Get(':id')
-  findOneById(@Param('id') id: string) {
-    return this.usersService.findOneByIdOrUsername('id', +id);
-  }
-  @Get(':username')
+  @Get('/:username')
   findOneByUsername(@Param('username') username: string) {
-    return this.usersService.findOneByIdOrUsername('username', username);
+    return this.usersService.getUserInfo('username', username);
   }
   @UseGuards(JwtGuard)
   @Patch('/me')

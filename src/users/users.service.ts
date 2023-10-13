@@ -38,6 +38,12 @@ export class UsersService {
     return user;
   }
 
+  async getUserInfo(key: 'id' | 'username', value: number | string) {
+    const user = await this.findOneByIdOrUsername(key, value);
+    const { password, ...result } = user;
+    return result;
+  }
+
   async update(user: User, updateUserDto: UpdateUserDto) {
     if (updateUserDto.password) {
       const newHashPassword = await hash(updateUserDto.password, 10);
