@@ -6,18 +6,23 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
+import { JwtGuard } from '../auth/guards/jwt.guard';
+import { User } from '../users/entities/user.entity';
+import { AuthUser } from '../decorators/user.decorator';
 
 @Controller('wishes')
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
+  @UseGuards(JwtGuard)
   @Post()
-  create(@Body() createWishDto: CreateWishDto) {
-    return this.wishesService.create(createWishDto);
+  create(@AuthUser() user: User, @Body() createWishDto: CreateWishDto) {
+    return this.wishesService.create(createWishDto, user);
   }
 
   @Get()

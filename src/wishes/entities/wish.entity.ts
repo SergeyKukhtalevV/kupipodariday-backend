@@ -3,6 +3,7 @@ import { GeneralEntity } from '../../utils/GeneralEntity';
 import {
   IsInt,
   IsNumber,
+  IsPositive,
   IsString,
   IsUrl,
   MaxLength,
@@ -31,11 +32,12 @@ export class Wish extends GeneralEntity {
   @IsNumber()
   price: number;
 
-  @Column({ type: 'float' })
+  @Column({ type: 'float', default: 0 })
+  @IsPositive()
   @IsNumber()
   raised: number;
 
-  @ManyToOne(() => User, (user) => user.wishes)
+  @ManyToOne(() => User, (user) => user.id)
   owner: User;
 
   @Column()
@@ -45,6 +47,7 @@ export class Wish extends GeneralEntity {
   description: string;
 
   @Column({ type: 'integer', default: 0 })
+  @IsPositive()
   @IsInt()
   copied: number;
 
