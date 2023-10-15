@@ -24,24 +24,36 @@ export class WishesController {
   create(@AuthUser() user: User, @Body() createWishDto: CreateWishDto) {
     return this.wishesService.create(createWishDto, user);
   }
-
+  @Get('/last')
+  getLastWish() {
+    return this.wishesService.getWishesBy('createdAt', 'DESC', 40);
+  }
+  @Get('/top')
+  getTopWish() {
+    return this.wishesService.getWishesBy('copied', 'ASC', 20);
+  }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.wishesService.findOne(+id);
+  }
   @Get()
   findAll() {
     return this.wishesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wishesService.findOne(+id);
-  }
-
+  @UseGuards(JwtGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
     return this.wishesService.update(+id, updateWishDto);
   }
-
+  @UseGuards(JwtGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishesService.remove(+id);
+  remove(@AuthUser() user: User, @Param('id') id: string) {
+    return this.wishesService.remove(user, +id);
+  }
+  @UseGuards(JwtGuard)
+  @Post(':id/copy')
+  copyWish(@AuthUser() user: User, @Param('id') id: string) {
+    return this.wishesService.copyWishById(user, +id);
   }
 }
