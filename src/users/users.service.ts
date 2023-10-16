@@ -1,9 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Like, Repository } from 'typeorm';
+import { Like, QueryFailedError, Repository } from 'typeorm';
 import { hash } from 'bcrypt';
 import { FindUserDto } from './dto/find-user.dto';
 
@@ -21,8 +26,17 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     const user = this.usersRepository.create(createUserDto);
-
-    return this.usersRepository.save(user);
+    try {
+      return await this.usersRepository.save(user);
+    } catch (e) {
+      if (e instanceof QueryFailedError) {
+        throw new BadRequestException(
+          'The user with this email or username is already registered',
+        );
+      } else {
+        throw new InternalServerErrorException(`Server error. ${e}`);
+      }
+    }
   }
   async findOneByIdOrUsername(key: 'id' | 'username', value: number | string) {
     const user = await this.usersRepository.findOne({

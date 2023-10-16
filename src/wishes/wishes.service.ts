@@ -36,7 +36,7 @@ export class WishesService {
         return {};
       }
     } catch (e) {
-      throw new InternalServerErrorException(`Server Error. {${e}`);
+      throw new InternalServerErrorException(`Server Error. ${e}`);
     }
   }
 
@@ -59,7 +59,7 @@ export class WishesService {
         where: { id },
       });
     } catch (e) {
-      throw new NotFoundException(e);
+      throw new NotFoundException(`Not found wish with ${id}. ${e}`);
     }
   }
 
@@ -67,12 +67,20 @@ export class WishesService {
     return `This action returns all wishes`;
   }
 
-  async update(id: number, updateWishDto: UpdateWishDto) {
-    const updateResult = await this.wishesRepository.update(id, updateWishDto);
-    if (updateResult.affected === 0) {
-      throw new NotFoundException(`Not can update wish with ${id}`);
+  async update(user: User, id: number, updateWishDto: UpdateWishDto) {
+    const wish = await this.findOne(id);
+    if (user.id === wish.owner.id) {
+      const updateResult = await this.wishesRepository.update(
+        id,
+        updateWishDto,
+      );
+      if (updateResult.affected === 0) {
+        throw new NotFoundException(`Not can update wish with ${id}`);
+      } else {
+        return {};
+      }
     } else {
-      return {};
+      throw new ForbiddenException('You cannot update the alien wish');
     }
   }
 
@@ -82,7 +90,7 @@ export class WishesService {
       try {
         return await this.wishesRepository.delete({ id });
       } catch (e) {
-        throw new NotFoundException(`Server Error. {${e}`);
+        throw new NotFoundException(`Server Error. ${e}`);
       }
     } else {
       throw new ForbiddenException('You cannot delete the alien wish');
@@ -108,7 +116,7 @@ export class WishesService {
         });
         return {};
       } catch (e) {
-        throw new NotFoundException(`Server Error. {${e}`);
+        throw new NotFoundException(`Server Error. ${e}`);
       }
     } else {
       throw new ForbiddenException('You cannot copy the own wish');

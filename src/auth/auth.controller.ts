@@ -5,7 +5,7 @@ import { SigningDto } from './dto/signingDto';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 
-@Controller('/')
+@Controller()
 export class AuthController {
   constructor(
     private authService: AuthService,
@@ -13,12 +13,12 @@ export class AuthController {
   ) {}
 
   @UseGuards(AuthGuard('local'))
-  @Post('signin')
+  @Post('/signin')
   async signin(@Body() signingDto: SigningDto) {
     return this.authService.signin(signingDto);
   }
 
-  @Post('signup')
+  @Post('/signup')
   async signup(@Body() createUserDto: CreateUserDto) {
     const user = this.usersService.signup(createUserDto);
     return this.authService.signin(createUserDto);
