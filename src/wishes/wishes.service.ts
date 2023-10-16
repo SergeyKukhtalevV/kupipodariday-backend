@@ -57,6 +57,13 @@ export class WishesService {
     try {
       return await this.wishesRepository.findOne({
         where: { id },
+        relations: {
+          owner: {
+            offers: true,
+            wishes: true,
+            wishlists: true,
+          },
+        },
       });
     } catch (e) {
       throw new NotFoundException(`Not found wish with ${id}. ${e}`);
@@ -70,11 +77,8 @@ export class WishesService {
   async update(user: User, id: number, updateWishDto: UpdateWishDto) {
     const wish = await this.findOne(id);
     if (user.id === wish.owner.id) {
-      const updateResult = await this.wishesRepository.update(
-        id,
-        updateWishDto,
-      );
-      if (updateResult.affected === 0) {
+      const updateWish = await this.wishesRepository.update(id, updateWishDto);
+      if (updateWish.affected === 0) {
         throw new NotFoundException(`Not can update wish with ${id}`);
       } else {
         return {};
@@ -88,7 +92,8 @@ export class WishesService {
     const wish = await this.findOne(id);
     if (user.id === wish.owner.id) {
       try {
-        return await this.wishesRepository.delete({ id });
+        await this.wishesRepository.delete({ id });
+        return wish;
       } catch (e) {
         throw new NotFoundException(`Server Error. ${e}`);
       }
@@ -98,22 +103,25 @@ export class WishesService {
   }
 
   async copyWishById(user: User, id: number) {
-    const copiedWish = await this.findOne(id);
-    if (user.id !== copiedWish.owner.id) {
+    const wish = await this.findOne(id);
+    if (user.id !== wish.owner.id) {
       try {
-        const {
-          id: wishId,
-          createdAt,
-          updatedAt,
-          raised,
-          copied,
-          ...wishInfo
-        } = copiedWish;
-        const newWish = await this.wishesRepository.save({
+        await this.wishesRepository.save({
           owner: user,
-          ...wishInfo,
-          copied: copiedWish.copied + 1,
+          name: wish.name,
+          link: wish.link,
+          image: wish.image,
+          description: wish.description,
+          price: wish.price,
+          copied: wish.copied,
         });
+        const updateWish = await this.wishesRepository.update(id, {
+          ...wish,
+          copied: wish.copied + 1,
+        });
+        if (updateWish.affected === 0) {
+          throw new NotFoundException(`Not can update wish with ${id}`);
+        }
         return {};
       } catch (e) {
         throw new NotFoundException(`Server Error. ${e}`);
