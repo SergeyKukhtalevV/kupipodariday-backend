@@ -9,7 +9,7 @@ import { UpdateWishDto } from './dto/update-wish.dto';
 import { User } from '../users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wish } from './entities/wish.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 @Injectable()
 export class WishesService {
@@ -70,10 +70,15 @@ export class WishesService {
     }
   }
 
-  findAll() {
-    return `This action returns all wishes`;
+  async findAllByIds(ids: number[]) {
+    try {
+      return await this.wishesRepository.find({
+        where: { id: In(ids) },
+      });
+    } catch (e) {
+      throw new NotFoundException(`Not found wishes. ${e}`);
+    }
   }
-
   async update(user: User, id: number, updateWishDto: UpdateWishDto) {
     const wish = await this.findOne(id);
     if (user.id === wish.owner.id) {
