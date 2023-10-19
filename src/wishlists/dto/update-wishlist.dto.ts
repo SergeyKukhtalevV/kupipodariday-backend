@@ -15,10 +15,6 @@ export class UpdateWishlistDto extends PartialType(CreateWishlistDto) {
   @IsString()
   name: string;
 
-  @MaxLength(1500)
-  @IsString()
-  description: string;
-
   @IsUrl()
   image: string;
 

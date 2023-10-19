@@ -6,23 +6,19 @@ import { Wish } from '../../wishes/entities/wish.entity';
 
 @Entity()
 export class Wishlist extends GeneralEntity {
-  @Column()
+  @Column({ default: 'Мой вишлист' })
   @MinLength(1)
   @MaxLength(250)
   name: string;
 
-  @Column()
-  @MaxLength(1500)
-  description: string;
-
-  @Column()
+  @Column({ default: 'https://i.pravatar.cc/150?img=3' })
   @IsUrl()
   image: string;
 
-  @ManyToMany(() => Wish, (wish) => wish.name)
-  @JoinTable()
-  items: Wish[];
-
   @ManyToOne(() => User, (user) => user.wishlists)
   owner: User;
+
+  @ManyToMany(() => Wish, (wish) => wish.id)
+  @JoinTable()
+  items: Wish[];
 }

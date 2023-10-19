@@ -66,7 +66,7 @@ export class WishesService {
         },
       });
     } catch (e) {
-      throw new NotFoundException(`Not found wish with ${id}. ${e}`);
+      throw new NotFoundException(`Not found wish. ${e}`);
     }
   }
 
@@ -82,8 +82,8 @@ export class WishesService {
   async update(user: User, id: number, updateWishDto: UpdateWishDto) {
     const wish = await this.findOne(id);
     if (user.id === wish.owner.id) {
-      const updateWish = await this.wishesRepository.update(id, updateWishDto);
-      if (updateWish.affected === 0) {
+      const updatedWish = await this.wishesRepository.update(id, updateWishDto);
+      if (updatedWish.affected === 0) {
         throw new NotFoundException(`Not can update wish with ${id}`);
       } else {
         return {};
