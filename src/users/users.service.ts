@@ -51,7 +51,7 @@ export class UsersService {
   async getUserInfo(key: 'id' | 'username', value: number | string) {
     const user = await this.findOneByIdOrUsername(key, value);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...result } = user;
+    const { password, email, ...result } = user;
     return result;
   }
 
@@ -82,7 +82,7 @@ export class UsersService {
       throw new NotFoundException(`Not found user with ${findUserDto.query}`);
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...result } = user;
+    const { password, email, ...result } = user;
     return result;
   }
 }
