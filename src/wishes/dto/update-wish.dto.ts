@@ -2,6 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreateWishDto } from './create-wish.dto';
 import {
   IsNumber,
+  IsOptional,
   IsPositive,
   IsString,
   IsUrl,
@@ -14,21 +15,32 @@ export class UpdateWishDto extends PartialType(CreateWishDto) {
   @MinLength(1)
   @MaxLength(250)
   @IsString()
-  name: string;
+  @IsOptional()
+  name?: string;
 
   @IsUrl()
-  link: string;
+  @IsOptional()
+  link?: string;
 
   @IsUrl()
-  image: string;
+  @IsOptional()
+  image?: string;
 
   @IsNumber()
   @Min(1)
   @IsPositive()
-  price: number;
+  @IsOptional()
+  price?: number;
 
   @MinLength(1)
   @MaxLength(1024)
   @IsString()
-  description: string;
+  @IsOptional()
+  description?: string;
+
+  @IsNumber()
+  @Min(1)
+  @IsPositive()
+  @IsOptional()
+  raised?: number;
 }

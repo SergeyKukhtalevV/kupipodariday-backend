@@ -59,7 +59,9 @@ export class WishesService {
         where: { id },
         relations: {
           owner: {
-            offers: true,
+            offers: {
+              user: true,
+            },
             wishes: true,
             wishlists: true,
           },
@@ -120,13 +122,10 @@ export class WishesService {
           price: wish.price,
           copied: wish.copied,
         });
-        const updateWish = await this.wishesRepository.update(id, {
+        await this.wishesRepository.update(id, {
           ...wish,
           copied: wish.copied + 1,
         });
-        if (updateWish.affected === 0) {
-          throw new NotFoundException(`Not can update wish with ${id}`);
-        }
         return {};
       } catch (e) {
         throw new NotFoundException(`Server Error. ${e}`);
