@@ -20,14 +20,16 @@ export class WishlistsService {
     private wishesService: WishesService,
   ) {}
   async create(user: User, createWishlistDto: CreateWishlistDto) {
+    const { itemsId, name, image } = createWishlistDto;
     try {
-      const wishes = createWishlistDto.itemsId
+      const wishes = itemsId
         ? await this.wishesService.findAllByIds(createWishlistDto.itemsId)
         : [];
       return await this.wishlistRepository.save({
         items: wishes,
         owner: user,
-        createWishlistDto,
+        name,
+        image,
       });
     } catch (error) {
       throw new BadRequestException(`Bad request for create wishlist`);
@@ -48,10 +50,7 @@ export class WishlistsService {
     try {
       return await this.wishlistRepository.findOne({
         where: { id },
-        relations: {
-          itemsId: true,
-          owner: true,
-        },
+        relations: ['owner', 'items'],
       });
     } catch (e) {
       throw new NotFoundException(`Not found wishlist. ${e}`);
@@ -60,14 +59,15 @@ export class WishlistsService {
 
   async update(user: User, id: number, updateWishlistDto: UpdateWishlistDto) {
     const wishList = await this.findOne(id);
+    const { itemsId, name, image } = updateWishlistDto;
     if (user.id === wishList.owner.id) {
-      const wishes = updateWishlistDto.itemsId
+      const wishes = itemsId
         ? await this.wishesService.findAllByIds(updateWishlistDto.itemsId)
         : [];
       const updatedWishList = await this.wishlistRepository.update(id, {
-        name: updateWishlistDto.name,
-        image: updateWishlistDto.image,
-        itemsId: wishes,
+        name,
+        image,
+        items: wishes,
       });
       if (updatedWishList.affected === 0) {
         throw new NotFoundException(`Not can update wishList with ${id}`);

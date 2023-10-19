@@ -7,7 +7,7 @@ import { UsersService } from '../../users/users.service';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private configService: ConfigService,
+    configService: ConfigService,
     private usersService: UsersService,
   ) {
     super({
@@ -17,12 +17,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(jwtPayload: { sub: number }) {
-    const user = this.usersService.findOneByIdOrUsername('id', jwtPayload.sub);
+    const user = await this.usersService.findOneByIdOrUsername(
+      'id',
+      jwtPayload.sub,
+    );
 
     if (!user) {
       throw new UnauthorizedException();
     }
 
-    return user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, email, ...result } = user;
+    return result;
   }
 }
