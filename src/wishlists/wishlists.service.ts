@@ -21,8 +21,8 @@ export class WishlistsService {
   ) {}
   async create(user: User, createWishlistDto: CreateWishlistDto) {
     try {
-      const wishes = createWishlistDto.items
-        ? await this.wishesService.findAllByIds(createWishlistDto.items)
+      const wishes = createWishlistDto.itemsId
+        ? await this.wishesService.findAllByIds(createWishlistDto.itemsId)
         : [];
       return await this.wishlistRepository.save({
         items: wishes,
@@ -49,7 +49,7 @@ export class WishlistsService {
       return await this.wishlistRepository.findOne({
         where: { id },
         relations: {
-          items: true,
+          itemsId: true,
           owner: true,
         },
       });
@@ -61,13 +61,13 @@ export class WishlistsService {
   async update(user: User, id: number, updateWishlistDto: UpdateWishlistDto) {
     const wishList = await this.findOne(id);
     if (user.id === wishList.owner.id) {
-      const wishes = updateWishlistDto.items
-        ? await this.wishesService.findAllByIds(updateWishlistDto.items)
+      const wishes = updateWishlistDto.itemsId
+        ? await this.wishesService.findAllByIds(updateWishlistDto.itemsId)
         : [];
       const updatedWishList = await this.wishlistRepository.update(id, {
         name: updateWishlistDto.name,
         image: updateWishlistDto.image,
-        items: wishes,
+        itemsId: wishes,
       });
       if (updatedWishList.affected === 0) {
         throw new NotFoundException(`Not can update wishList with ${id}`);

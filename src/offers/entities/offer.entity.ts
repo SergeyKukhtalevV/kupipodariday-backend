@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 import { GeneralEntity } from '../../utils/GeneralEntity';
 import { User } from '../../users/entities/user.entity';
 import { Wish } from '../../wishes/entities/wish.entity';
+import { IsBoolean } from 'class-validator';
 
 @Entity()
 export class Offer extends GeneralEntity {
@@ -15,5 +16,6 @@ export class Offer extends GeneralEntity {
   amount: number;
 
   @Column({ default: false })
+  @IsBoolean()
   hidden: boolean;
 }

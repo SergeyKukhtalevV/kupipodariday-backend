@@ -36,10 +36,6 @@ export class WishesController {
   findOne(@Param('id') id: string) {
     return this.wishesService.findOne(+id);
   }
-  @Get()
-  findAll() {
-    return this.wishesService.findAll();
-  }
 
   @UseGuards(JwtGuard)
   @Patch(':id')

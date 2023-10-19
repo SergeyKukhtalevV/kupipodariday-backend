@@ -1,22 +1,21 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { OffersService } from './offers.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
-import { UpdateOfferDto } from './dto/update-offer.dto';
+import { JwtGuard } from '../auth/guards/jwt.guard';
+import { WishesService } from '../wishes/wishes.service';
+import { AuthUser } from '../decorators/user.decorator';
+import { User } from '../users/entities/user.entity';
 
+@UseGuards(JwtGuard)
 @Controller('offers')
 export class OffersController {
-  constructor(private readonly offersService: OffersService) {}
+  constructor(
+    private readonly offersService: OffersService,
+    private readonly wishesService: WishesService,
+  ) {}
 
   @Post()
-  create(@Body() createOfferDto: CreateOfferDto) {
+  create(@AuthUser() user: User, @Body() createOfferDto: CreateOfferDto) {
     return this.offersService.create(createOfferDto);
   }
 
@@ -28,15 +27,5 @@ export class OffersController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.offersService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOfferDto: UpdateOfferDto) {
-    return this.offersService.update(+id, updateOfferDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.offersService.remove(+id);
   }
 }

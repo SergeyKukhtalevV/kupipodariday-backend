@@ -20,5 +20,5 @@ export class Wishlist extends GeneralEntity {
 
   @ManyToMany(() => Wish, (wish) => wish.id)
   @JoinTable()
-  items: Wish[];
+  itemsId: Wish[];
 }
