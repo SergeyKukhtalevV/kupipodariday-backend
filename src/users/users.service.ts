@@ -11,6 +11,8 @@ import { User } from './entities/user.entity';
 import { Like, QueryFailedError, Repository } from 'typeorm';
 import { hash } from 'bcrypt';
 import { FindUserDto } from './dto/find-user.dto';
+import { UserPublicProfileResponseDto } from './dto/responce/user-public-profile-response.dto';
+import { UserProfileResponseDto } from './dto/responce/user-profile-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -47,15 +49,39 @@ export class UsersService {
     }
     return user;
   }
-
-  async getUserInfo(key: 'id' | 'username', value: number | string) {
+  async getInfoAboutMe(username: string): Promise<UserProfileResponseDto> {
+    const user = await this.findOneByIdOrUsername('username', username);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = user;
+    return result;
+  }
+  async getUserInfo(
+    key: 'id' | 'username',
+    value: number | string,
+  ): Promise<UserPublicProfileResponseDto> {
     const user = await this.findOneByIdOrUsername(key, value);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, email, ...result } = user;
     return result;
   }
-
-  async update(user: User, updateUserDto: UpdateUserDto) {
+  async getUserWishes(username: string) {
+    const user = await this.usersRepository.findOne({
+      where: { username },
+      relations: {
+        wishes: true,
+        offers: true,
+        wishlists: true,
+      },
+    });
+    if (!user.wishes) {
+      throw new NotFoundException('Wishes not found');
+    }
+    return user.wishes;
+  }
+  async update(
+    user: User,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserProfileResponseDto> {
     if (updateUserDto.password) {
       const newHashPassword = await hash(updateUserDto.password, 10);
       updateUserDto = { ...updateUserDto, password: newHashPassword };
@@ -67,11 +93,16 @@ export class UsersService {
     if (updateResult.affected === 0) {
       throw new NotFoundException(`Not can update user with ${user.id}`);
     } else {
-      return this.findOneByIdOrUsername('id', user.id);
+      const updatedUser = await this.findOneByIdOrUsername('id', user.id);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...result } = updatedUser;
+      return result;
     }
   }
 
-  async findMany(findUserDto: FindUserDto) {
+  async findMany(
+    findUserDto: FindUserDto,
+  ): Promise<UserPublicProfileResponseDto> {
     const user = await this.usersRepository.findOne({
       where: [
         { email: Like(`${findUserDto.query}`) },

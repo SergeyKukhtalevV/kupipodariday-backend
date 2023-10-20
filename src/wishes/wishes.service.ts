@@ -10,6 +10,7 @@ import { User } from '../users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wish } from './entities/wish.entity';
 import { In, Repository } from 'typeorm';
+import { UserPublicProfileResponseDto } from '../users/dto/responce/user-public-profile-response.dto';
 
 @Injectable()
 export class WishesService {
@@ -18,7 +19,10 @@ export class WishesService {
     private wishesRepository: Repository<Wish>,
   ) {}
 
-  async create(createWishDto: CreateWishDto, user: User) {
+  async create(
+    createWishDto: CreateWishDto,
+    user: UserPublicProfileResponseDto,
+  ) {
     const { name, link, image, description, price } = createWishDto;
     try {
       if (
@@ -109,7 +113,7 @@ export class WishesService {
     }
   }
 
-  async copyWishById(user: User, id: number) {
+  async copyWishById(user: UserPublicProfileResponseDto, id: number) {
     const wish = await this.findOne(id);
     if (user.id !== wish.owner.id) {
       try {

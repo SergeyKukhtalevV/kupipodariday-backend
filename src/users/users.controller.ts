@@ -20,7 +20,17 @@ export class UsersController {
   @UseGuards(JwtGuard)
   @Get('/me')
   getUserInfo(@AuthUser() user: User) {
-    return this.usersService.findOneByIdOrUsername('username', user.username);
+    return this.usersService.getInfoAboutMe(user.username);
+  }
+  @UseGuards(JwtGuard)
+  @Get('/me/wishes')
+  getMyWishes(@AuthUser() user: User) {
+    return this.usersService.getUserWishes(user.username);
+  }
+  @UseGuards(JwtGuard)
+  @Get(':username/wishes')
+  getUserWishes(@AuthUser() user: User) {
+    return this.usersService.getUserWishes(user.username);
   }
   @UseGuards(JwtGuard)
   @Patch('/me')

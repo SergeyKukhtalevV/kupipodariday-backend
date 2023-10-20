@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { compare } from 'bcrypt';
 import { SigningDto } from './dto/signingDto';
+import { UserProfileResponseDto } from '../users/dto/responce/user-profile-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +17,9 @@ export class AuthService {
 
     return { access_token: this.jwtService.sign(payload) };
   }
-  async validatePassword(signingDto: SigningDto) {
+  async validatePassword(
+    signingDto: SigningDto,
+  ): Promise<UserProfileResponseDto> {
     const user = await this.usersService.findOneByIdOrUsername(
       'username',
       signingDto.username,
@@ -27,7 +30,7 @@ export class AuthService {
       );
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, email, ...result } = user;
+    const { password, ...result } = user;
     return result;
   }
 }
