@@ -30,12 +30,12 @@ export class WishlistsController {
     return this.wishlistsService.findAll();
   }
 
-  @Get(':id')
+  @Get('/:id')
   findOne(@Param('id') id: string) {
     return this.wishlistsService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Patch('/:id')
   update(
     @AuthUser() user: User,
     @Param('id') id: string,
@@ -44,7 +44,7 @@ export class WishlistsController {
     return this.wishlistsService.update(user, +id, updateWishlistDto);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   remove(@AuthUser() user: User, @Param('id') id: string) {
     return this.wishlistsService.remove(user, +id);
   }
