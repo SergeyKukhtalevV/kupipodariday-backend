@@ -11,6 +11,7 @@ import { Wishlist } from './entities/wishlist.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { WishesService } from '../wishes/wishes.service';
 import { UserPublicProfileResponseDto } from '../users/dto/responce/user-public-profile-response.dto';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class WishlistsService {
@@ -45,6 +46,16 @@ export class WishlistsService {
         owner: true,
         items: true,
       },
+      select: {
+        owner: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          username: true,
+          about: true,
+          avatar: true,
+        },
+      },
     });
     if (!wishlist) {
       throw new NotFoundException('Not found wishlist');
@@ -60,6 +71,16 @@ export class WishlistsService {
         owner: true,
         items: true,
       },
+      select: {
+        owner: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          username: true,
+          about: true,
+          avatar: true,
+        },
+      },
     });
     if (!wishlists) {
       throw new NotFoundException('Not found wishlists');
@@ -68,24 +89,13 @@ export class WishlistsService {
     }
   }
 
-  async update(
-    user: UserPublicProfileResponseDto,
-    id: number,
-    updateWishlistDto: UpdateWishlistDto,
-  ) {
+  async update(user: User, id: number, updateWishlistDto: UpdateWishlistDto) {
     const wishList = await this.findOne(id);
-    const { itemsId, name, image } = updateWishlistDto;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     if (user.id === wishList.owner.id) {
-      const wishes = itemsId
-        ? await this.wishesService.findAllByIds(updateWishlistDto.itemsId)
-        : [];
-      const updatedWishList = await this.wishlistRepository.update(id, {
-        name,
-        image,
-        items: wishes,
-      });
+      const updatedWishList = await this.wishlistRepository.update(
+        { id },
+        updateWishlistDto,
+      );
       if (updatedWishList.affected === 0) {
         throw new NotFoundException(`Not can update wishList with ${id}`);
       } else {
@@ -98,8 +108,6 @@ export class WishlistsService {
 
   async remove(user: UserPublicProfileResponseDto, id: number) {
     const wishlist = await this.findOne(id);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     if (user.id === wishlist.owner.id) {
       try {
         await this.wishlistRepository.delete({ id });

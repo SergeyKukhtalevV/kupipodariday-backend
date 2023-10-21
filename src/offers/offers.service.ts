@@ -27,7 +27,7 @@ export class OffersService {
     }
     if (user.id !== wish.owner.id) {
       try {
-        await this.wishesService.update(user, wish.id, { raised: totalRaised });
+        await this.wishesService.updateWishRaised(wish.id, totalRaised);
         await this.offerRepository.save({
           user,
           item: wish,
@@ -42,12 +42,23 @@ export class OffersService {
     }
   }
 
-  findAll() {
+  async findAll() {
     try {
-      return this.offerRepository.find({
+      return await this.offerRepository.find({
         relations: {
           user: true,
           item: true,
+        },
+        select: {
+          user: {
+            id: true,
+            createdAt: true,
+            updatedAt: true,
+            username: true,
+            about: true,
+            avatar: true,
+            email: true,
+          },
         },
       });
     } catch (e) {
@@ -55,13 +66,24 @@ export class OffersService {
     }
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     try {
-      return this.offerRepository.findOne({
+      return await this.offerRepository.findOne({
         where: { id },
         relations: {
           user: true,
           item: true,
+        },
+        select: {
+          user: {
+            id: true,
+            createdAt: true,
+            updatedAt: true,
+            username: true,
+            about: true,
+            avatar: true,
+            email: true,
+          },
         },
       });
     } catch (e) {

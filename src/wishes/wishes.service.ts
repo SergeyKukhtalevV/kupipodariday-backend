@@ -98,6 +98,16 @@ export class WishesService {
       throw new ForbiddenException('You cannot update the alien wish');
     }
   }
+  async updateWishRaised(id: number, updateRaised: number) {
+    const updatedWish = await this.wishesRepository.update(id, {
+      raised: updateRaised,
+    });
+    if (updatedWish.affected === 0) {
+      throw new NotFoundException(`Not can update wish with ${id}`);
+    } else {
+      return {};
+    }
+  }
 
   async remove(user: User, id: number) {
     const wish = await this.findOne(id);
