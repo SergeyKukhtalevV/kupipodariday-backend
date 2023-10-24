@@ -9,20 +9,24 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Like, QueryFailedError, Repository } from 'typeorm';
-import { hash } from 'bcrypt';
 import { FindUserDto } from './dto/find-user.dto';
 import { UserPublicProfileResponseDto } from './dto/responce/user-public-profile-response.dto';
 import { UserProfileResponseDto } from './dto/responce/user-profile-response.dto';
+import { BcryptService } from '../common/bcrypt/bcrypt.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private bcryptService: BcryptService,
   ) {}
 
   async signup(createUserDto: CreateUserDto) {
-    const hashPassword = await hash(createUserDto.password, 10);
+    const hashPassword = await this.bcryptService.getHash(
+      createUserDto.password,
+      10,
+    );
     return this.create({ ...createUserDto, password: hashPassword });
   }
 
@@ -83,7 +87,10 @@ export class UsersService {
     updateUserDto: UpdateUserDto,
   ): Promise<UserProfileResponseDto> {
     if (updateUserDto.password) {
-      const newHashPassword = await hash(updateUserDto.password, 10);
+      const newHashPassword = await this.bcryptService.getHash(
+        updateUserDto.password,
+        10,
+      );
       updateUserDto = { ...updateUserDto, password: newHashPassword };
     }
     const updateResult = await this.usersRepository.update(

@@ -1,15 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
-import { compare } from 'bcrypt';
 import { SigningDto } from './dto/signingDto';
 import { UserProfileResponseDto } from '../users/dto/responce/user-profile-response.dto';
+import { BcryptService } from '../common/bcrypt/bcrypt.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     private usersService: UsersService,
+    private bcryptService: BcryptService,
   ) {}
   async signin(signingDto: SigningDto) {
     const user = await this.validatePassword(signingDto);
@@ -24,7 +25,11 @@ export class AuthService {
       'username',
       signingDto.username,
     );
-    if (!user || (await compare(signingDto.password, user.password))) {
+    const isAuth = await this.bcryptService.comparePasswords(
+      signingDto.password,
+      user.password,
+    );
+    if (!isAuth) {
       throw new NotFoundException(
         `Not found user with ${signingDto.username} or password`,
       );

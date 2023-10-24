@@ -6,9 +6,10 @@ import { Wish } from './entities/wish.entity';
 import { User } from '../users/entities/user.entity';
 import { Offer } from '../offers/entities/offer.entity';
 import { UsersService } from '../users/users.service';
+import { BcryptModule } from '../common/bcrypt/bcrypt.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Wish, User, Offer])],
+  imports: [TypeOrmModule.forFeature([Wish, User, Offer]), BcryptModule],
   controllers: [WishesController],
   providers: [WishesService, UsersService],
   exports: [WishesService],
