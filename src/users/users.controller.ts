@@ -13,36 +13,35 @@ import { JwtGuard } from '../auth/guards/jwt.guard';
 import { AuthUser } from '../decorators/user.decorator';
 import { User } from './entities/user.entity';
 import { FindUserDto } from './dto/find-user.dto';
-
+@UseGuards(JwtGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-  @UseGuards(JwtGuard)
+
   @Get('/me')
   getUserInfo(@AuthUser() user: User) {
     return this.usersService.getInfoAboutMe(user.username);
   }
-  @UseGuards(JwtGuard)
+
   @Get('/me/wishes')
   getMyWishes(@AuthUser() user: User) {
     return this.usersService.getUserWishes(user.username);
   }
-  @UseGuards(JwtGuard)
+
   @Get(':username/wishes')
   getUserWishes(@AuthUser() user: User) {
     return this.usersService.getUserWishes(user.username);
   }
-  @UseGuards(JwtGuard)
+
   @Patch('/me')
   update(@AuthUser() user: User, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(user, updateUserDto);
   }
-  @Get('/:username')
+
   findOneByUsername(@Param('username') username: string) {
     return this.usersService.getUserInfo('username', username);
   }
 
-  @UseGuards(JwtGuard)
   @Post('/find')
   findUserInfo(@Body() findUserDto: FindUserDto) {
     return this.usersService.findMany(findUserDto);

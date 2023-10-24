@@ -32,6 +32,7 @@ export class WishesController {
   getTopWish() {
     return this.wishesService.getWishesBy('copied', 'ASC', 20);
   }
+  @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.wishesService.findOne(+id);
